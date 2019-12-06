@@ -11,6 +11,7 @@ import React, {useEffect, useState} from 'react';
 import Pagination from "../components/Pagination";
 import InvoicesAPI from "../services/InvoicesAPI";
 import moment from "moment";
+import {Link} from "react-router-dom";
 
 const STATUS_CLASSES = {
     PAID: "success",
@@ -38,10 +39,10 @@ const InvoicesPage = (props) => {
      */
     const fetchInvoices = async () => {
         // traitement asynchrone de suppression en bdd via AXIOS (=InvoicesAPI)
-        try{
-            const data =  await InvoicesAPI.findAll();
+        try {
+            const data = await InvoicesAPI.findAll();
             setInvoices(data);
-        }catch(error){
+        } catch (error) {
             console.log(error.response);
         }
     }
@@ -59,15 +60,15 @@ const InvoicesPage = (props) => {
     const handleDelete = async id => {
 
         // Copie de notre tableau original avant la suppression
-        const originalInvoices  = [...invoices];
+        const originalInvoices = [...invoices];
 
         // Mise à jour visible pour l utilisateur
         setInvoices(invoices.filter(invoice => invoice.id !== id));
 
         // traitement asynchrone de suppression en bdd via AXIOS (=CustomersAPI)
-        try{
+        try {
             await InvoicesAPI.delete(id);
-        }catch(error){
+        } catch (error) {
             setInvoices(originalInvoices);
             console.log(error.response);
         }
@@ -83,7 +84,7 @@ const InvoicesPage = (props) => {
      * Fonction de filtre de nos customers
      * @param event
      */
-    const handleSearch = (event) =>{
+    const handleSearch = (event) => {
         setCurrentPage(1);
         setSearch(event.currentTarget.value);
     };
@@ -91,13 +92,12 @@ const InvoicesPage = (props) => {
     /**
      * Variable filtrés non paginé
      */
-    const filteredInvoices  = invoices.filter(
+    const filteredInvoices = invoices.filter(
         i =>
             i.customer.firstName.toLowerCase().includes(search.toLowerCase()) ||
-            i.customer.lastName.toLowerCase().includes(search.toLowerCase()) || 
+            i.customer.lastName.toLowerCase().includes(search.toLowerCase()) ||
             i.amount.toString().startsWith(search.toLowerCase()) ||
             STATUS_LABELS[i.status].toLowerCase().includes(search.toLowerCase())
-
     );
 
     /**
@@ -119,7 +119,11 @@ const InvoicesPage = (props) => {
 
     return (
         <>
-            <h1>Liste des factures</h1>
+
+            <div className="d-flex justify-content-between align-items-center mb-3">
+                <h1>Liste des factures</h1>
+                <Link to="/invoice/new" className="btn btn-primary">Créer une facture</Link>
+            </div>
 
             <div className="form-group">
                 <input
@@ -151,16 +155,14 @@ const InvoicesPage = (props) => {
                         </td>
                         <td>{formatDate(invoice.sentAt)}</td>
                         <td className="text-center">
-                            <span className={"badge badge-" + STATUS_CLASSES[invoice.status]}>{STATUS_LABELS[invoice.status]}</span>
+                            <span
+                                className={"badge badge-" + STATUS_CLASSES[invoice.status]}>{STATUS_LABELS[invoice.status]}</span>
                         </td>
                         <td className="text-center">{invoice.amount.toLocaleString()} €</td>
                         <td>
-                            <button
-                                onClick={() => handleDelete(invoice.id)}
-                                className="btn btn-sm btn-primary mr-1"
-                            >
+                            <Link to={"/invoice/" + invoice.id} className="btn btn-sm btn-primary mr-1">
                                 Editer
-                            </button>
+                            </Link>
                             <button
                                 onClick={() => handleDelete(invoice.id)}
                                 className="btn btn-sm btn-danger"
@@ -174,7 +176,7 @@ const InvoicesPage = (props) => {
                 </tbody>
             </table>
 
-            {itemsPerPage < filteredInvoices.length &&(
+            {itemsPerPage < filteredInvoices.length && (
                 <Pagination
                     currentPage={currentPage}
                     itemsPerPage={itemsPerPage}

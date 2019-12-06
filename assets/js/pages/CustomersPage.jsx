@@ -8,7 +8,8 @@
 
 import React, {useEffect, useState} from 'react';
 import Pagination from "../components/Pagination";
-import CustomersAPI from "../services/customersAPI";
+import CustomersAPI from "../services/CustomersAPI";
+import {Link} from "react-router-dom";
 
 const CustomersPage = (props) => {
 
@@ -24,10 +25,10 @@ const CustomersPage = (props) => {
      */
     const fetchCustomers = async () => {
         // traitement asynchrone de suppression en bdd via AXIOS (=CustomersAPI)
-        try{
-            const data =  await CustomersAPI.findAll();
+        try {
+            const data = await CustomersAPI.findAll();
             setCustomers(data);
-        }catch(error){
+        } catch (error) {
             console.log(error.response);
         }
     }
@@ -45,15 +46,15 @@ const CustomersPage = (props) => {
     const handleDelete = async id => {
 
         // Copie de notre tableau original avant la suppression
-        const originalCustomers  = [...customers];
+        const originalCustomers = [...customers];
 
         // Mise à jour visible pour l utilisateur
         setCustomers(customers.filter(customer => customer.id !== id));
 
         // traitement asynchrone de suppression en bdd via AXIOS (=CustomersAPI)
-        try{
+        try {
             await CustomersAPI.delete(id);
-        }catch(error){
+        } catch (error) {
             setCustomers(originalCustomers);
             console.log(error.response);
         }
@@ -69,7 +70,7 @@ const CustomersPage = (props) => {
      * Fonction de filtre de nos customers
      * @param event
      */
-    const handleSearch = (event) =>{
+    const handleSearch = (event) => {
         setCurrentPage(1);
         setSearch(event.currentTarget.value);
     };
@@ -77,7 +78,7 @@ const CustomersPage = (props) => {
     /**
      * Variable filtrés non paginé
      */
-    const filteredCustomers  = customers.filter(
+    const filteredCustomers = customers.filter(
         c =>
             c.firstName.toLowerCase().includes(search.toLowerCase()) ||
             c.lastName.toLowerCase().includes(search.toLowerCase()) ||
@@ -97,7 +98,10 @@ const CustomersPage = (props) => {
 
     return (
         <>
-            <h1>Liste des clients</h1>
+            <div className="d-flex justify-content-between align-items-center mb-3">
+                <h1>Liste des clients</h1>
+                <Link to="/customer/new" className="btn btn-primary">Créer un client</Link>
+            </div>
 
             <div className="form-group">
                 <input
@@ -133,6 +137,9 @@ const CustomersPage = (props) => {
                         </td>
                         <td className="text-center">{customer.totalAmount.toLocaleString()} €</td>
                         <td>
+                            <Link to={"/customer/" + customer.id} className="btn btn-sm btn-primary mr-1">
+                                Editer
+                            </Link>
                             <button
                                 onClick={() => handleDelete(customer.id)}
                                 disabled={customer.invoices.length > 0}
@@ -147,13 +154,13 @@ const CustomersPage = (props) => {
                 </tbody>
             </table>
 
-            {itemsPerPage < filteredCustomers.length &&(
-            <Pagination
-                currentPage={currentPage}
-                itemsPerPage={itemsPerPage}
-                length={filteredCustomers.length}
-                onPageChanged={handlePageChange}
-            />
+            {itemsPerPage < filteredCustomers.length && (
+                <Pagination
+                    currentPage={currentPage}
+                    itemsPerPage={itemsPerPage}
+                    length={filteredCustomers.length}
+                    onPageChanged={handlePageChange}
+                />
             )}
 
 

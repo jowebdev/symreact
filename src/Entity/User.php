@@ -49,6 +49,17 @@ class User implements UserInterface
     private $password;
 
     /**
+     * @var string The hashed password
+     * @Assert\NotBlank(message="Le mot de passe est obligatoire")
+     * @Assert\EqualTo(
+     *     propertyPath="password",
+     *     message="Les 2 mots de passes ne sont pas identiques"
+     * )
+     */
+    private $passwordConfirm;
+
+
+    /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"invoices_read", "customers_read","invoices_subresource", "users_read"})
      * @Assert\NotBlank(message="Le prénom est obligatoire")
@@ -99,7 +110,7 @@ class User implements UserInterface
      */
     public function getUsername(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**
@@ -113,7 +124,8 @@ class User implements UserInterface
         return $this->roles;
     }
 
-    function addRole($role) {
+    function addRole($role)
+    {
         $this->roles[] = $role;
     }
 
@@ -122,7 +134,7 @@ class User implements UserInterface
      */
     public function getPassword(): string
     {
-        return (string) $this->password;
+        return (string)$this->password;
     }
 
     public function setPassword(string $password): self
@@ -202,5 +214,22 @@ class User implements UserInterface
         }
 
         return $this;
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getPasswordConfirm(): string
+    {
+        return $this->passwordConfirm;
+    }
+
+    /**
+     * @param string $passwordConfirm
+     */
+    public function setPasswordConfirm(string $passwordConfirm): void
+    {
+        $this->passwordConfirm = $passwordConfirm;
     }
 }

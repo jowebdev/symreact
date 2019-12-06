@@ -35,7 +35,7 @@ class Customer
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"customers_read"})
+     * @Groups({"customers_read", "invoices_read"})
      */
     private $id;
 
@@ -93,10 +93,11 @@ class Customer
      * @return float
      * @Groups({"customers_read"})
      */
-    public function getTotalAmount() : float {
-        return array_reduce($this->invoices->toArray(), function($total, Invoice $invoice){
-           return $total +  $invoice->getAmount();
-        },0);
+    public function getTotalAmount(): float
+    {
+        return array_reduce($this->invoices->toArray(), function ($total, Invoice $invoice) {
+            return $total + $invoice->getAmount();
+        }, 0);
     }
 
     /**
@@ -104,10 +105,11 @@ class Customer
      * @return float
      * @Groups({"customers_read"})
      */
-    public function getUnpaidAmount() : float {
-        return array_reduce($this->invoices->toArray(), function($total, Invoice $invoice){
+    public function getUnpaidAmount(): float
+    {
+        return array_reduce($this->invoices->toArray(), function ($total, Invoice $invoice) {
             return $total + ($invoice->getStatus() === "PAID" || $invoice->getStatus() === "CANCELLED" ? 0 : $invoice->getAmount());
-        },0);
+        }, 0);
     }
 
 
