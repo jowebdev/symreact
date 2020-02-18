@@ -11,6 +11,7 @@ import React, {useContext, useState} from 'react';
 import AuthAPI from "../services/AuthAPI";
 import AuthContext from "../contexts/AuthContext";
 import Field from "../components/forms/Field";
+import {toast} from "react-toastify";
 
 const LoginPage = ({history}) => {
 
@@ -28,9 +29,9 @@ const LoginPage = ({history}) => {
      * Gestion des champs
      * @param currentTarget (EVENT)
      */
-    const handleChange =  ({currentTarget}) => {
+    const handleChange = ({currentTarget}) => {
         const {value, name} = currentTarget;
-        setCredentials({...credentials, [name] : value});
+        setCredentials({...credentials, [name]: value});
     };
 
     /**
@@ -45,10 +46,12 @@ const LoginPage = ({history}) => {
             await AuthAPI.authenticate(credentials);
             setError("");
             setIsAuthenticated(true);
+            toast.success("Vous êtes désormais connecté");
             history.replace("/customers");
 
-        }catch (error) {
+        } catch (error) {
             setError("Aucun compte ne possède cette adresse ou alors les informations ne correspondent pas");
+            toast.error("Une erreur est survenue");
         }
     };
 

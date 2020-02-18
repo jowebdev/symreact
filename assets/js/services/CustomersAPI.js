@@ -23,7 +23,7 @@ function update(id, customer) {
 }
 
 function create(customer) {
-    return Axios.post("http://127.0.0.1:8000/api/customers", customer)
+    return axios.post("http://127.0.0.1:8000/api/customers", customer)
 }
 
 export default {

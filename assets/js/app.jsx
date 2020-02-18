@@ -17,9 +17,12 @@ import RegisterPage from "./pages/RegisterPage";
 import AuthAPI from "./services/AuthAPI";
 // Context
 import AuthContext from "./contexts/AuthContext";
+import {ToastContainer, toast} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 // Import de la feuille de style
 require('../css/app.css');
+
 
 // Authentifcation depuuis le localStorage
 AuthAPI.setup();
@@ -71,6 +74,8 @@ const App = () => {
                     </Switch>
                 </main>
             </HashRouter>
+
+            <ToastContainer position={toast.POSITION.BOTTOM_LEFT}/>
         </AuthContext.Provider>);
 }
 

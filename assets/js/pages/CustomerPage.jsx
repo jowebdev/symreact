@@ -11,6 +11,8 @@ import React, {useEffect, useState} from 'react';
 import Field from "../components/forms/Field";
 import {Link} from "react-router-dom";
 import CustomersAPI from "../services/CustomersAPI";
+import {toast} from "react-toastify";
+import FormContentLoader from "../components/loaders/FormContentLoader";
 
 const CustomerPage = ({match, history}) => {
 
@@ -19,6 +21,7 @@ const CustomerPage = ({match, history}) => {
 
     // Etat Edition ou non ?
     const [editing, setEditing] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     // Etat Customer
     const [customer, setCustomer] = useState({
@@ -40,9 +43,10 @@ const CustomerPage = ({match, history}) => {
     const fetchCustomer = async id => {
             try {
                 const {firstName, lastName, email, company} = await CustomersAPI.find(id);
-                setCustomer({firstName, lastName, email, company})
+                setLoading(false);
+                setCustomer({firstName, lastName, email, company});
             } catch (error) {
-                // TODO : Notification flash en cas d'erreur
+                toast.error("Impossible de charger le client");
                 history.replace("/customers");
             }
         }
@@ -52,6 +56,7 @@ const CustomerPage = ({match, history}) => {
     useEffect(() => {
         if (id !== "new") {
             setEditing(true);
+            setLoading(true);
             fetchCustomer(id);
         }
     }, [id]);
@@ -69,10 +74,11 @@ const CustomerPage = ({match, history}) => {
         try {
             if (editing) {
                 await CustomersAPI.update(id, customer);
-                // TODO:  Flash notification de succès
+                toast.success("Le client a bien été modifiée");
+
             } else {
                 await CustomersAPI.create(customer);
-                // TODO:  Flash notification de succès
+                toast.success("Le client a bien été créée");
                 history.replace("/customers");
             }
             setErrors({});
@@ -90,7 +96,7 @@ const CustomerPage = ({match, history}) => {
                 )
                 ;
                 setErrors(apiErrors);
-                // TODO:  Flash notification d'erreur
+                toast.error("Des erreurs dans votre formulaire");
             }
         }
     };
@@ -98,7 +104,9 @@ const CustomerPage = ({match, history}) => {
     return (
         <>
             <h1>{!editing && "Création" || "Modification"} d'un client</h1>
+            {loading && <FormContentLoader/>}
 
+            {!loading &&
             <form onSubmit={handleSubmit}>
                 <Field
                     name="lastName"
@@ -139,7 +147,7 @@ const CustomerPage = ({match, history}) => {
                     <Link to="/customers" className="btn btn-link">Retourner à la liste</Link>
                 </div>
 
-            </form>
+            </form>}
 
         </>
     );
