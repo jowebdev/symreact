@@ -9,18 +9,19 @@
 
 import axios from "axios";
 import jwtDecode from "jwt-decode";
+import {LOGIN_API} from "../config";
 
 /**
  * Requete HTTP d'authentification et stockage du token dans le local storage et dans Axios
  * @param {Object} credentials
  * @returns {Promise<boolean>}
  */
-function authenticate(credentials){
+function authenticate(credentials) {
 
     return axios
-        .post('http://127.0.0.1:8000/api/login_check', credentials)
-        .then(response =>  response.data.token)
-        .then(token =>  {
+        .post(LOGIN_API, credentials)
+        .then(response => response.data.token)
+        .then(token => {
             // je stocke le token dans mon local storage
             window.localStorage.setItem("authToken", token);
 
@@ -36,7 +37,7 @@ function authenticate(credentials){
 /**
  * Déconnexion (suppression du token sur axios et dans le local storage
  */
-function logout(){
+function logout() {
     window.localStorage.removeItem("authToken");
     delete axios.defaults.headers["Authorization"];
 }
@@ -44,15 +45,15 @@ function logout(){
 /**
  * Mise en  place lors du chargement de l'application
  */
-function setup(){
+function setup() {
 
     const token = window.localStorage.getItem("authToken");
 
     // si le token est valide ?
-    if (token){
+    if (token) {
         const {exp: expiration} = jwtDecode(token);
-        if (expiration * 1000 > new Date().getTime()){
-           setAxiosToken(token);
+        if (expiration * 1000 > new Date().getTime()) {
+            setAxiosToken(token);
         }
     }
 }
@@ -61,7 +62,7 @@ function setup(){
  * Positionne le token JWT sur Axios
  * @param {string} token
  */
-function setAxiosToken(token){
+function setAxiosToken(token) {
     axios.defaults.headers["Authorization"] = "Bearer " + token;
 
 }
@@ -70,13 +71,13 @@ function setAxiosToken(token){
  * Permet de savoir si on est authentifié ou pas
  * @returns {boolean}
  */
-function isAuthenticated(){
+function isAuthenticated() {
     const token = window.localStorage.getItem("authToken");
 
     // si le token est valide ?
-    if (token){
+    if (token) {
         const {exp: expiration} = jwtDecode(token);
-        if (expiration * 1000 > new Date().getTime()){
+        if (expiration * 1000 > new Date().getTime()) {
             return true;
         }
     }
@@ -84,7 +85,7 @@ function isAuthenticated(){
     return false;
 }
 
-export default{
+export default {
     authenticate,
     logout,
     setup,
